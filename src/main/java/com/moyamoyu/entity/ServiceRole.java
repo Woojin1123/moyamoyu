@@ -1,4 +1,5 @@
 package com.moyamoyu.entity;
 
-public class ServiceRole {
+public enum ServiceRole {
+    ROLE_USER, ROLE_ADMIN
 }

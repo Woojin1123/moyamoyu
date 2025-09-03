@@ -1,4 +1,5 @@
 package com.moyamoyu.entity;
 
-public class MoimRole {
+public enum MoimRole {
+    LEADER, MEMBER
 }

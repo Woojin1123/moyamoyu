@@ -1,4 +1,4 @@
-package com.moyamoyu.controller;
+package com.moyamoyu.dto.request;
 
 public record LoginRequest(
         String email,

@@ -1,6 +1,8 @@
 package com.moyamoyu.controller;
 
 import com.moyamoyu.dto.ApiResponse;
+import com.moyamoyu.dto.request.LoginRequest;
+import com.moyamoyu.dto.request.SignUpRequest;
 import com.moyamoyu.dto.response.LoginResponse;
 import com.moyamoyu.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,5 +30,18 @@ public class AuthController {
                         "로그인 성공",
                         loginResponse.accessToken()
                 ));
+    }
+
+    @RequestMapping("/signup")
+    public ResponseEntity<ApiResponse> signUp(
+            @RequestBody SignUpRequest signUpRequest
+    ){
+        authService.signUp(signUpRequest);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "회원가입 성공 다시 로그인 해주세요.",
+                        null
+                )
+        );
     }
 }

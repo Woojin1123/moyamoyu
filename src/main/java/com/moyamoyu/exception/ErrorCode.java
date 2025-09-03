@@ -17,6 +17,8 @@ public enum ErrorCode { // 에러 코드관리를 위한 Enum
     ACCESS_DENIED("ACCESS_DENIED", "권한이 없습니다.", HttpStatus.FORBIDDEN),
     // NotFound 404
     RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "RESOURCE IS NOT FOUND", HttpStatus.NOT_FOUND),
+    // Conflict 409
+    RESOURCE_ALREADY_EXISTS("RESOURCE_ALREADY_EXISTS", "RESOURCE IS ALREADY EXIST", HttpStatus.CONFLICT),
     // Internal Server Error 500
     API_REQUEST_FAILED("API_REQUEST_FAILED", "API 요청이 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 

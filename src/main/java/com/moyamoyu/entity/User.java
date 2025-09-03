@@ -1,7 +1,9 @@
 package com.moyamoyu.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +29,13 @@ public class User {
     private ServiceRole serviceRole;
     @OneToMany(mappedBy = "member")
     private List<MoimMember> moimMembers = new ArrayList<>();
+
+    @Builder
+    public User(String email, String password, String nickname, LocalDateTime createdAt, ServiceRole serviceRole) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.createdAt = createdAt;
+        this.serviceRole = serviceRole;
+    }
 }

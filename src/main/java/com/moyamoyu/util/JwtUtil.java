@@ -32,13 +32,13 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long githubId, String loginId, String role, Boolean isRefreshToken) {
+    public String createToken(Long id, String email, String role, Boolean isRefreshToken) {
         long expiration = isRefreshToken ? REFRESH_TOKEN_EXP : ACCESS_TOKEN_EXP;
         long currentTimeMills = System.currentTimeMillis();
 
         return Jwts.builder()
-                .setSubject(String.valueOf(githubId))
-                .claim("loginId", loginId)
+                .setSubject(String.valueOf(id))
+                .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date(currentTimeMills))
                 .setExpiration(new Date(currentTimeMills + expiration))

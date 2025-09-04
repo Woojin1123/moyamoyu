@@ -1,6 +1,6 @@
 package com.moyamoyu.dto.response;
 
-public record LoginResponse(
+public record TokenResponse(
         String refreshToken,
         String accessToken
 ) {

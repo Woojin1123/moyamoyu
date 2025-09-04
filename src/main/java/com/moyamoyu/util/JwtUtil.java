@@ -74,4 +74,8 @@ public class JwtUtil {
             throw new ApiException(ErrorCode.INVALID_TOKEN);
         }
     }
+
+    public String getEmail(String refreshToken) {
+        return extractClaims(refreshToken).get("email",String.class);
+    }
 }

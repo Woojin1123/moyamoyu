@@ -4,8 +4,11 @@ import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.request.LoginRequest;
 import com.moyamoyu.dto.request.SignUpRequest;
 import com.moyamoyu.dto.response.LoginResponse;
+import com.moyamoyu.exception.ApiException;
+import com.moyamoyu.exception.ErrorCode;
 import com.moyamoyu.service.AuthService;
 import com.moyamoyu.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,7 @@ public class AuthController {
             HttpServletResponse response
     ) {
         LoginResponse loginResponse = authService.login(loginRequest);
-        cookieUtil.createRefreshTokenCookie(response,loginResponse.refreshToken());
+        cookieUtil.createRefreshTokenCookie(response, loginResponse.refreshToken());
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "로그인 성공",
@@ -35,7 +38,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Object>> signUp(
             @RequestBody SignUpRequest signUpRequest
-    ){
+    ) {
         authService.signUp(signUpRequest);
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -45,4 +48,22 @@ public class AuthController {
         );
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(
+            HttpServletResponse response, HttpServletRequest request
+    ) {
+        String refreshToken = cookieUtil.extractRefreshTokenFromCookie(request);
+
+        if (refreshToken == null) {
+            throw new ApiException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+        authService.logout(refreshToken);
+        cookieUtil.expireRefreshTokenCookie(response);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "로그아웃 성공",
+                        null
+                ));
+    }
 }

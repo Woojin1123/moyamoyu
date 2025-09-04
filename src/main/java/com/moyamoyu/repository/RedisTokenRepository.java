@@ -10,9 +10,14 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RedisTokenRepository {
     private final RedisTemplate<String, String> redisTemplate;
-
+    private static final String refreshTokenPrefix = "refreshToken:";
     public void save(String email, String token, Long expiration) {
-        String key = "refreshToken:" + email;
+        String key = refreshTokenPrefix + email;
         redisTemplate.opsForValue().set(key, token, expiration, TimeUnit.MILLISECONDS);
+    }
+
+    public void deleteRefreshToken(String email) {
+        String key = refreshTokenPrefix + email;
+        redisTemplate.delete(key);
     }
 }

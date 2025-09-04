@@ -46,9 +46,7 @@ public class AuthService {
     public void signUp(SignUpRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.email())) {
             throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-        }
-        ;
-
+        };
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
 
         User user = User.builder()
@@ -59,5 +57,10 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+    }
+
+    public void logout(String refreshToken) {
+        String email = jwtUtil.getEmail(refreshToken);
+        redisTokenRepository.deleteRefreshToken(email);
     }
 }

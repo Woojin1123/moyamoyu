@@ -3,7 +3,6 @@ package com.moyamoyu.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,7 +12,8 @@ public class MoimMember {
     private Long id;
     @Enumerated(EnumType.STRING)
     private MoimStatus status;
-    private String quitReason;
+    private String reason;
+    @Enumerated(EnumType.STRING)
     private MoimRole role;
     private LocalDateTime joinedAt;
 

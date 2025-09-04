@@ -12,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 public class User {
     @Id
@@ -25,7 +24,7 @@ public class User {
     @Column(columnDefinition = "TINYINT(1)")
     private Boolean isDeleted;
     private LocalDateTime createdAt;
-    private MoimRole moimRole;
+    @Enumerated(EnumType.STRING)
     private ServiceRole serviceRole;
     @OneToMany(mappedBy = "member")
     private List<MoimMember> moimMembers = new ArrayList<>();

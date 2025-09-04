@@ -23,8 +23,8 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final Long REFRESH_TOKEN_EXP = 1000L * 60 * 60 * 24 * 14; // 7일;
-    private static final Long ACCESS_TOKEN_EXP = 1000L * 60 * 30; // 15분
+    public static final Long REFRESH_TOKEN_EXP = 1000L * 60 * 60 * 24 * 14; // 7일;
+    public static final Long ACCESS_TOKEN_EXP = 1000L * 60 * 30; // 15분
 
     @PostConstruct
     public void init() {
@@ -32,16 +32,24 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long id, String email, String role, Boolean isRefreshToken) {
-        long expiration = isRefreshToken ? REFRESH_TOKEN_EXP : ACCESS_TOKEN_EXP;
+    public String createAccessToken(Long id, String email, String role) {
         long currentTimeMills = System.currentTimeMillis();
-
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date(currentTimeMills))
-                .setExpiration(new Date(currentTimeMills + expiration))
+                .setExpiration(new Date(currentTimeMills + ACCESS_TOKEN_EXP))
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+    public String createRefreshToken(Long id, String email) {
+        long currentTimeMills = System.currentTimeMillis();
+        return Jwts.builder()
+                .setSubject(String.valueOf(id))
+                .claim("email", email)
+                .setIssuedAt(new Date(currentTimeMills))
+                .setExpiration(new Date(currentTimeMills + REFRESH_TOKEN_EXP))
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }

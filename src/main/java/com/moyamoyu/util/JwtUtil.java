@@ -32,16 +32,24 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Long id, String email, String role, Boolean isRefreshToken) {
-        long expiration = isRefreshToken ? REFRESH_TOKEN_EXP : ACCESS_TOKEN_EXP;
+    public String createAccessToken(Long id, String email, String role) {
         long currentTimeMills = System.currentTimeMillis();
-
         return Jwts.builder()
                 .setSubject(String.valueOf(id))
                 .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date(currentTimeMills))
-                .setExpiration(new Date(currentTimeMills + expiration))
+                .setExpiration(new Date(currentTimeMills + ACCESS_TOKEN_EXP))
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+    public String createRefreshToken(Long id, String email) {
+        long currentTimeMills = System.currentTimeMillis();
+        return Jwts.builder()
+                .setSubject(String.valueOf(id))
+                .claim("email", email)
+                .setIssuedAt(new Date(currentTimeMills))
+                .setExpiration(new Date(currentTimeMills + REFRESH_TOKEN_EXP))
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }

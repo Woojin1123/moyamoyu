@@ -9,9 +9,7 @@ import com.moyamoyu.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +18,7 @@ public class AuthController {
     private final AuthService authService;
     private final CookieUtil cookieUtil;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(
             @RequestBody LoginRequest loginRequest,
             HttpServletResponse response
@@ -34,7 +32,7 @@ public class AuthController {
                 ));
     }
 
-    @RequestMapping("/signup")
+    @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Object>> signUp(
             @RequestBody SignUpRequest signUpRequest
     ){
@@ -46,4 +44,5 @@ public class AuthController {
                 )
         );
     }
+
 }

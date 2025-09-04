@@ -23,8 +23,8 @@ public class JwtUtil {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final Long REFRESH_TOKEN_EXP = 1000L * 60 * 60 * 24 * 14; // 7일;
-    private static final Long ACCESS_TOKEN_EXP = 1000L * 60 * 30; // 15분
+    public static final Long REFRESH_TOKEN_EXP = 1000L * 60 * 60 * 24 * 14; // 7일;
+    public static final Long ACCESS_TOKEN_EXP = 1000L * 60 * 30; // 15분
 
     @PostConstruct
     public void init() {

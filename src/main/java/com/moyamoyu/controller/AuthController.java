@@ -5,6 +5,7 @@ import com.moyamoyu.dto.request.LoginRequest;
 import com.moyamoyu.dto.request.SignUpRequest;
 import com.moyamoyu.dto.response.LoginResponse;
 import com.moyamoyu.service.AuthService;
+import com.moyamoyu.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final CookieUtil cookieUtil;
 
     @RequestMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(
@@ -24,7 +26,7 @@ public class AuthController {
             HttpServletResponse response
     ) {
         LoginResponse loginResponse = authService.login(loginRequest);
-
+        cookieUtil.createRefreshTokenCookie(response,loginResponse.refreshToken());
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "로그인 성공",
@@ -33,7 +35,7 @@ public class AuthController {
     }
 
     @RequestMapping("/signup")
-    public ResponseEntity<ApiResponse> signUp(
+    public ResponseEntity<ApiResponse<Object>> signUp(
             @RequestBody SignUpRequest signUpRequest
     ){
         authService.signUp(signUpRequest);

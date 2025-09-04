@@ -2,7 +2,7 @@ package com.moyamoyu.service;
 
 import com.moyamoyu.dto.request.LoginRequest;
 import com.moyamoyu.dto.request.SignUpRequest;
-import com.moyamoyu.dto.response.LoginResponse;
+import com.moyamoyu.dto.response.TokenResponse;
 import com.moyamoyu.entity.ServiceRole;
 import com.moyamoyu.entity.User;
 import com.moyamoyu.exception.ApiException;
@@ -25,7 +25,7 @@ public class AuthService {
     private final RedisTokenRepository redisTokenRepository;
     private final JwtUtil jwtUtil;
 
-    public LoginResponse login(LoginRequest loginRequest) {
+    public TokenResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.email()).orElseThrow(() ->
                 new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
@@ -37,16 +37,17 @@ public class AuthService {
         String accessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getServiceRole().name());
         String refreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail());
 
-        redisTokenRepository.save(user.getEmail(),refreshToken,REFRESH_TOKEN_EXP);
+        redisTokenRepository.save(user.getEmail(), refreshToken, REFRESH_TOKEN_EXP);
 
-        return new LoginResponse(refreshToken, accessToken);
+        return new TokenResponse(refreshToken, accessToken);
     }
 
     @Transactional
     public void signUp(SignUpRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.email())) {
             throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-        };
+        }
+        ;
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
 
         User user = User.builder()
@@ -60,7 +61,22 @@ public class AuthService {
     }
 
     public void logout(String refreshToken) {
-        String email = jwtUtil.getEmail(refreshToken);
+        String token = jwtUtil.substringToken(refreshToken);
+        String email = jwtUtil.getEmail(token);
         redisTokenRepository.deleteRefreshToken(email);
+    }
+
+    public TokenResponse refresh(String refreshToken) {
+        String token = jwtUtil.substringToken(refreshToken);
+        String email = jwtUtil.getEmail(token);
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+
+        String newAccessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getServiceRole().name());
+        String newRefreshToken = jwtUtil.createRefreshToken(user.getId(), user.getEmail());
+        redisTokenRepository.save(user.getEmail(), newRefreshToken, REFRESH_TOKEN_EXP);
+
+        return new TokenResponse(newRefreshToken, newAccessToken);
     }
 }

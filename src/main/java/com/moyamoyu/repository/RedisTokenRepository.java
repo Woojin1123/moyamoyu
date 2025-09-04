@@ -20,4 +20,9 @@ public class RedisTokenRepository {
         String key = refreshTokenPrefix + email;
         redisTemplate.delete(key);
     }
+
+    public String findRefreshToken(String email) {
+        String key = refreshTokenPrefix + email;
+        return redisTemplate.opsForValue().get(key);
+    }
 }

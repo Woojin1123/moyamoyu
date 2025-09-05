@@ -12,6 +12,9 @@ import com.moyamoyu.repository.MoimMemberRepository;
 import com.moyamoyu.repository.MoimRepository;
 import com.moyamoyu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +54,22 @@ public class MoimService {
         return SimpleMoimResponse.builder()
                 .moimId(savedMoim.getId())
                 .name(savedMoim.getName())
+                .description(savedMoim.getDescription())
+                .capacity(savedMoim.getGrade().getCapacity())
+                .memberCount(savedMoim.getMemberCount())
                 .build();
+    }
+
+    public Page<SimpleMoimResponse> findMoims(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Moim> moims = moimRepository.findAll(pageable);
+        return moims.map(
+                moim ->SimpleMoimResponse.builder()
+                        .moimId(moim.getId())
+                        .name(moim.getName())
+                        .description(moim.getDescription())
+                        .capacity(moim.getGrade().getCapacity())
+                        .memberCount(moim.getMemberCount())
+                        .build());
     }
 }

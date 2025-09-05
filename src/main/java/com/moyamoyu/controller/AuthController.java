@@ -78,4 +78,9 @@ public class AuthController {
                 )
         );
     }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponse<Object>> verifyEmail() {
+        return null;
+    }
 }

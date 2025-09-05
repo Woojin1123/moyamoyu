@@ -1,0 +1,2 @@
+ALTER TABLE moim
+    ADD COLUMN is_deleted TINYINT(1) DEFAULT FALSE;

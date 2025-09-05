@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum MoimGrade {
-    BASIC(10), // 최대인원
-    PREMIUM(30);
+    BASIC(10L), // 최대인원
+    PREMIUM(30L);
 
-    private final int capacity;
-    MoimGrade(int capacity) {
+    private final Long capacity;
+    MoimGrade(Long capacity) {
         this.capacity = capacity;
     }
 }

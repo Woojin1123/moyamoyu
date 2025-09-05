@@ -38,4 +38,14 @@ public class Moim {
         this.grade = MoimGrade.BASIC;
         this.memberCount = 0L;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public void update(String name, String description, String joinPolicy) {
+        if(name != null) this.name = name;
+        if(description != null) this.description = description;
+        if(joinPolicy != null) this.joinPolicy = JoinPolicy.valueOf(joinPolicy);
+    }
 }

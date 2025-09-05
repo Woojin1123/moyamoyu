@@ -1,10 +1,13 @@
 package com.moyamoyu.service;
 
+import com.moyamoyu.dto.AuthUser;
 import com.moyamoyu.dto.request.MoimCreateRequest;
+import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.entity.Moim;
 import com.moyamoyu.entity.MoimMember;
 import com.moyamoyu.entity.User;
+import com.moyamoyu.entity.enums.MoimCategory;
 import com.moyamoyu.entity.enums.MoimRole;
 import com.moyamoyu.exception.ApiException;
 import com.moyamoyu.exception.ErrorCode;
@@ -51,25 +54,40 @@ public class MoimService {
                 .build();
         moimMemberRepository.save(moimMember);
 
-        return SimpleMoimResponse.builder()
-                .moimId(savedMoim.getId())
-                .name(savedMoim.getName())
-                .description(savedMoim.getDescription())
-                .capacity(savedMoim.getGrade().getCapacity())
-                .memberCount(savedMoim.getMemberCount())
-                .build();
+        return SimpleMoimResponse.from(savedMoim);
     }
 
-    public Page<SimpleMoimResponse> findMoims(int page) {
+    public Page<SimpleMoimResponse> findMoims(int page, String category) {
         Pageable pageable = PageRequest.of(page, 10);
-        Page<Moim> moims = moimRepository.findAll(pageable);
-        return moims.map(
-                moim ->SimpleMoimResponse.builder()
-                        .moimId(moim.getId())
-                        .name(moim.getName())
-                        .description(moim.getDescription())
-                        .capacity(moim.getGrade().getCapacity())
-                        .memberCount(moim.getMemberCount())
-                        .build());
+        Page<Moim> moims = moimRepository.findAllByCategory(MoimCategory.valueOf(category), pageable);
+        return moims.map(SimpleMoimResponse::from);
+    }
+
+    @Transactional
+    public Long deleteMoim(AuthUser authUser, Long moimId) {
+        MoimMember moimMember = moimMemberRepository.findByMemberId(authUser.getId()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        if (!moimMember.getRole().name().equals("LEADER")) {
+            throw new ApiException(ErrorCode.ACCESS_DENIED);
+        }
+        Moim moim = moimMember.getMoim();
+        moim.delete();
+        moimRepository.save(moim);
+        return moim.getId();
+    }
+
+    @Transactional
+    public SimpleMoimResponse updateMoim(AuthUser authUser, Long moimId, MoimUpdateRequest moimUpdateRequest) {
+        MoimMember moimMember = moimMemberRepository.findByMemberId(authUser.getId()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        if (!moimMember.getRole().name().equals("LEADER")) {
+            throw new ApiException(ErrorCode.ACCESS_DENIED);
+        }
+        Moim moim = moimMember.getMoim();
+        moim.update(moimUpdateRequest.name(), moimUpdateRequest.description(), moimUpdateRequest.joinPolicy());
+        Moim savedMoim = moimRepository.save(moim);
+        return SimpleMoimResponse.from(savedMoim);
     }
 }

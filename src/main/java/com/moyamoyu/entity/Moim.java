@@ -3,9 +3,6 @@ package com.moyamoyu.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 public class Moim {
@@ -17,9 +14,4 @@ public class Moim {
     private JoinPolicy joinPolicy;
     private Long capacity;
     private Long memberCount;
-    @OneToMany(mappedBy = "moim")
-    private List<MoimMember> moimMembers = new ArrayList<>();
-
-    @OneToMany(mappedBy = "moim")
-    private List<JoinRequest> joinRequests = new ArrayList<>();
 }

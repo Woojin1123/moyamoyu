@@ -3,7 +3,7 @@ package com.moyamoyu.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
-import com.moyamoyu.entity.ServiceRole;
+import com.moyamoyu.entity.enums.ServiceRole;
 import com.moyamoyu.exception.ApiException;
 import com.moyamoyu.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -45,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.extractClaims(jwt);
                 Long userId = Long.valueOf(claims.getSubject());
                 String email = String.valueOf(claims.get("email"));
-                ServiceRole role = ServiceRole.of(String.valueOf(claims.get("role")));
+                ServiceRole role = ServiceRole.valueOf(String.valueOf(claims.get("role")));
 
                 AuthUser authUser = AuthUser.builder()
                         .id(userId)

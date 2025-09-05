@@ -1,6 +1,6 @@
 package com.moyamoyu.dto;
 
-import com.moyamoyu.entity.ServiceRole;
+import com.moyamoyu.entity.enums.ServiceRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

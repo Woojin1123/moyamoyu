@@ -1,5 +1,6 @@
 package com.moyamoyu.entity;
 
+import com.moyamoyu.entity.enums.ServiceRole;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

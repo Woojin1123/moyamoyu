@@ -1,0 +1,4 @@
+ALTER TABLE moim
+    ADD COLUMN category ENUM('STUDY', 'SPORTS','HOBBY');
+ALTER TABLE moim
+    ADD COLUMN grade ENUM('BASIC', 'PREMIUM');

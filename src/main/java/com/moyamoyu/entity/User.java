@@ -1,5 +1,6 @@
 package com.moyamoyu.entity;
 
+import com.moyamoyu.entity.enums.ServiceRole;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +8,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -26,8 +25,6 @@ public class User {
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
     private ServiceRole serviceRole;
-    @OneToMany(mappedBy = "member")
-    private List<MoimMember> moimMembers = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String nickname, LocalDateTime createdAt, ServiceRole serviceRole) {

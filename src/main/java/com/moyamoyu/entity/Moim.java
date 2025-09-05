@@ -1,25 +1,41 @@
 package com.moyamoyu.entity;
 
+import com.moyamoyu.entity.enums.JoinPolicy;
+import com.moyamoyu.entity.enums.MoimCategory;
+import com.moyamoyu.entity.enums.MoimGrade;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Moim {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
     @Enumerated(EnumType.STRING)
     private JoinPolicy joinPolicy;
-    private Long capacity;
+    @Enumerated(EnumType.STRING)
+    private MoimCategory category;
+    @Enumerated(EnumType.STRING)
+    private MoimGrade grade;
+    @ColumnDefault("false")
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean isDeleted;
     private Long memberCount;
-    @OneToMany(mappedBy = "moim")
-    private List<MoimMember> moimMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "moim")
-    private List<JoinRequest> joinRequests = new ArrayList<>();
+    @Builder
+    public Moim(String name, String description, String joinPolicy, String category) {
+        this.name = name;
+        this.description = description;
+        this.joinPolicy = JoinPolicy.valueOf(joinPolicy);
+        this.category = MoimCategory.valueOf(category);
+        this.grade = MoimGrade.BASIC;
+        this.memberCount = 0L;
+    }
 }

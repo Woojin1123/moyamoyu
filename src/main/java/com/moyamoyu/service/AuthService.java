@@ -3,7 +3,7 @@ package com.moyamoyu.service;
 import com.moyamoyu.dto.request.LoginRequest;
 import com.moyamoyu.dto.request.SignUpRequest;
 import com.moyamoyu.dto.response.TokenResponse;
-import com.moyamoyu.entity.ServiceRole;
+import com.moyamoyu.entity.enums.ServiceRole;
 import com.moyamoyu.entity.User;
 import com.moyamoyu.exception.ApiException;
 import com.moyamoyu.exception.ErrorCode;

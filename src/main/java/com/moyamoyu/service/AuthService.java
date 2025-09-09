@@ -50,7 +50,11 @@ public class AuthService {
         if (userRepository.existsByEmail(signUpRequest.email())) {
             throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
         }
-        ;
+
+        if(!redisTokenService.isVerified(signUpRequest.email())){
+            throw new ApiException(ErrorCode.BAD_REQUEST, "이메일 인증이 필요합니다.");
+        }
+
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
 
         User user = User.builder()
@@ -64,14 +68,12 @@ public class AuthService {
     }
 
     public void logout(String refreshToken) {
-        String token = jwtUtil.substringToken(refreshToken);
-        String email = jwtUtil.getEmail(token);
+        String email = jwtUtil.getEmail(refreshToken);
         redisTokenService.deleteRefreshToken(email);
     }
 
     public TokenResponse refresh(String refreshToken) {
-        String token = jwtUtil.substringToken(refreshToken);
-        String email = jwtUtil.getEmail(token);
+        String email = jwtUtil.getEmail(refreshToken);
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );

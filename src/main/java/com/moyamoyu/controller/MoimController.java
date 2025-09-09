@@ -10,6 +10,8 @@ import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.service.MoimService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/moims")
+@Tag(name = "MoimController" , description = "모임 관련 API")
 public class MoimController {
     private final MoimService moimService;
 
     @PostMapping
+    @Operation(summary = "모임 생성", description = "모임 생성 API")
     public ResponseEntity<ApiResponse<SimpleMoimResponse>> createMoim(
             @RequestBody MoimCreateRequest moimCreateRequest
     ) {
@@ -34,6 +38,7 @@ public class MoimController {
     }
 
     @GetMapping
+    @Operation(summary = "모임 전체 조회", description = "전체 모임 조회 API")
     public ResponseEntity<ApiResponse<Page<SimpleMoimResponse>>> findMoims(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "STUDY") String category
@@ -47,6 +52,7 @@ public class MoimController {
     }
 
     @DeleteMapping("/{moimId}")
+    @Operation(summary = "모임 삭제", description = "모임 삭제 API")
     public ResponseEntity<ApiResponse<Long>> deleteMoim(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId
@@ -60,6 +66,7 @@ public class MoimController {
     }
 
     @PatchMapping("/{moimId}")
+    @Operation(summary = "모임 정보 수정", description = "모임 정보 수정 API")
     public ResponseEntity<ApiResponse<SimpleMoimResponse>> updateMoim(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
@@ -74,6 +81,7 @@ public class MoimController {
     }
 
     @PostMapping("/{moimId}/join")
+    @Operation(summary = "모임 참가 신청", description = "모임 참가 신청 API")
     public ResponseEntity<ApiResponse<JoinMoimResponse>> joinMoim(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
@@ -88,6 +96,7 @@ public class MoimController {
     }
 
     @PostMapping("/{moimId}/join/{requestId}/approve")
+    @Operation(summary = "참가 신청 수락", description = "모임 참가 요청에 대해 수락하는 API")
     public ResponseEntity<ApiResponse<Long>> approveJoinMoim(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
@@ -102,6 +111,7 @@ public class MoimController {
     }
 
     @PostMapping("/{moimId}/join/{requestId}/reject")
+    @Operation(summary = "참가 신청 거절", description = "모임 참가 요청에 대해 거절하는 API")
     public ResponseEntity<ApiResponse<Long>> rejectJoinMoim(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
@@ -117,6 +127,7 @@ public class MoimController {
     }
 
     @GetMapping("/{moimId}/join")
+    @Operation(summary = "참가 요청 조회", description = "모임에 대한 참가 요청을 전부 조회하는 API")
     public ResponseEntity<ApiResponse<Page<SimpleJoinRequest>>> findAllJoinRequest(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,

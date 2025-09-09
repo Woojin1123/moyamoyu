@@ -51,5 +51,11 @@ public class RedisTokenService {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         redisTemplate.delete(key);
+        redisTemplate.opsForValue().set(key + ":verified", "1", 10, TimeUnit.MINUTES);
+    }
+
+    public boolean isVerified(String email){
+        String key = emailVerificationPrefix + email + ":verified";
+        return redisTemplate.opsForValue().get(key).equals("1");
     }
 }

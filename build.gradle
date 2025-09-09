@@ -45,6 +45,8 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
     //Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //SMTP
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

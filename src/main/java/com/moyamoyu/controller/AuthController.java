@@ -1,6 +1,8 @@
 package com.moyamoyu.controller;
 
 import com.moyamoyu.dto.ApiResponse;
+import com.moyamoyu.dto.request.EmailConfirmRequest;
+import com.moyamoyu.dto.request.EmailVerifyRequest;
 import com.moyamoyu.dto.request.LoginRequest;
 import com.moyamoyu.dto.request.SignUpRequest;
 import com.moyamoyu.dto.response.TokenResponse;
@@ -10,10 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,7 +50,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Object>> logout(
-            HttpServletResponse response, HttpServletRequest request
+            HttpServletResponse response,
+            HttpServletRequest request
     ) {
         String refreshToken = cookieUtil.extractRefreshTokenFromCookie(request);
 
@@ -66,7 +66,10 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<String>> refresh(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<String>> refresh(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
         String refreshToken = cookieUtil.extractRefreshTokenFromCookie(request);
 
         TokenResponse tokenResponse = authService.refresh(refreshToken);
@@ -79,8 +82,30 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<ApiResponse<Object>> verifyEmail() {
-        return null;
+    @PostMapping("/email-verifications")
+    public ResponseEntity<ApiResponse<Object>> sendEmail(
+            @RequestBody EmailVerifyRequest emailVerifyRequest
+    ) {
+        authService.verifyEmail(emailVerifyRequest.email());
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "이메일 인증 메일 발송",
+                        null
+                )
+        );
     }
+
+    @PostMapping("/email-verifications/confirm")
+    public ResponseEntity<ApiResponse<Object>> sendEmail(
+            @RequestBody EmailConfirmRequest emailConfirmRequest
+    ) {
+        authService.confirmEmail(emailConfirmRequest.email(), emailConfirmRequest.token());
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "이메일 인증 성공",
+                        null
+                )
+        );
+    }
+
 }

@@ -16,4 +16,6 @@ public interface MoimMemberRepository extends JpaRepository<MoimMember,Long> {
     boolean existsByMemberIdAndMoimId(Long memberId, Long moimId);
 
     MoimMember findByMoimIdAndRole(Long moimId, MoimRole role);
+
+    Long findMemberIdByMoimIdAndRole(Long moimId, MoimRole leader);
 }

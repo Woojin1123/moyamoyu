@@ -84,4 +84,18 @@ public class MoimController {
                 )
         );
     }
+
+    @PostMapping("/{moimId}/join/{requestId}/approve")
+    public ResponseEntity<ApiResponse<Long>> approveJoinMoim(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long moimId,
+            @PathVariable Long requestId
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "모임 참가 요청 성공",
+                        moimService.approveJoinMoim(authUser, moimId, requestId)
+                )
+        );
+    }
 }

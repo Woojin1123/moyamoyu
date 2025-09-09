@@ -39,4 +39,8 @@ public class JoinRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moim_id")
     private Moim moim;
+
+    public void approve() {
+        this.status = JoinRequestStatus.APPROVED;
+    }
 }

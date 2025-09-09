@@ -104,8 +104,8 @@ public class MoimService {
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
 
-        if (moimMemberRepository.existsByMemberIdAndMoimId(authUser.getId(),moimId)||
-                joinRequestRepository.existsByParticipantIdAndMoimId(authUser.getId(),moimId)) {
+        if (moimMemberRepository.existsByMemberIdAndMoimId(authUser.getId(), moimId) ||
+                joinRequestRepository.existsByParticipantIdAndMoimId(authUser.getId(), moimId)) {
             throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
         }
 
@@ -126,5 +126,33 @@ public class MoimService {
 
         JoinRequest savedJoinRequest = joinRequestRepository.save(joinRequest);
         return new JoinMoimResponse(moim.getId(), savedJoinRequest.getStatus().name());
+    }
+
+    @Transactional
+    public Long approveJoinMoim(AuthUser authUser, Long moimId, Long requestId) {
+        User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        Long leaderId = moimMemberRepository.findMemberIdByMoimIdAndRole(moimId, MoimRole.LEADER);
+        if (!user.getId().equals(leaderId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
+        }
+
+        JoinRequest joinRequest = joinRequestRepository.findByRequestId(requestId);
+        joinRequest.approve();
+        joinRequestRepository.save(joinRequest);
+
+        User participant = joinRequest.getParticipant();
+        Moim moim = joinRequest.getMoim();
+
+        MoimMember moimMember = MoimMember.builder()
+                .joinedUser(participant)
+                .moim(moim)
+                .moimRole(MoimRole.MEMBER)
+                .build();
+
+        moimMemberRepository.save(moimMember);
+
+        return participant.getId();
     }
 }

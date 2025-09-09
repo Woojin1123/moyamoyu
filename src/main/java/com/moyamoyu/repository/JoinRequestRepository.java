@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> {
     boolean existsByParticipantIdAndMoimId(Long id, Long moimId);
+
+    JoinRequest findByRequestId(Long requestId);
 }

@@ -2,8 +2,10 @@ package com.moyamoyu.controller;
 
 import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
+import com.moyamoyu.dto.request.JoinReasonRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
+import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.service.MoimService;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +67,20 @@ public class MoimController {
                 ApiResponse.success(
                         "모임 수정 성공",
                         moimService.updateMoim(authUser, moimId, moimUpdateRequest)
+                )
+        );
+    }
+
+    @PostMapping("/{moimId}/join")
+    public ResponseEntity<ApiResponse<JoinMoimResponse>> joinMoim(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long moimId,
+            @RequestBody JoinReasonRequest joinReasonRequest
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "모임 참가 요청 성공",
+                        moimService.joinMoim(authUser, moimId, joinReasonRequest)
                 )
         );
     }

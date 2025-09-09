@@ -1,9 +1,12 @@
 package com.moyamoyu.service;
 
 import com.moyamoyu.dto.AuthUser;
+import com.moyamoyu.dto.request.JoinReasonRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
+import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
+import com.moyamoyu.entity.JoinRequest;
 import com.moyamoyu.entity.Moim;
 import com.moyamoyu.entity.MoimMember;
 import com.moyamoyu.entity.User;
@@ -11,6 +14,7 @@ import com.moyamoyu.entity.enums.MoimCategory;
 import com.moyamoyu.entity.enums.MoimRole;
 import com.moyamoyu.exception.ApiException;
 import com.moyamoyu.exception.ErrorCode;
+import com.moyamoyu.repository.JoinRequestRepository;
 import com.moyamoyu.repository.MoimMemberRepository;
 import com.moyamoyu.repository.MoimRepository;
 import com.moyamoyu.repository.UserRepository;
@@ -21,11 +25,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class MoimService {
     private final MoimRepository moimRepository;
     private final MoimMemberRepository moimMemberRepository;
+    private final JoinRequestRepository joinRequestRepository;
     private final UserRepository userRepository;
 
     @Transactional
@@ -48,9 +55,9 @@ public class MoimService {
         Moim savedMoim = moimRepository.save(moim);
 
         MoimMember moimMember = MoimMember.builder()
-                .member(user)
+                .joinedUser(user)
                 .moim(savedMoim)
-                .role(MoimRole.LEADER)
+                .moimRole(MoimRole.LEADER)
                 .build();
         moimMemberRepository.save(moimMember);
 
@@ -89,5 +96,35 @@ public class MoimService {
         moim.update(moimUpdateRequest.name(), moimUpdateRequest.description(), moimUpdateRequest.joinPolicy());
         Moim savedMoim = moimRepository.save(moim);
         return SimpleMoimResponse.from(savedMoim);
+    }
+
+    @Transactional
+    public JoinMoimResponse joinMoim(AuthUser authUser, Long moimId, JoinReasonRequest joinReasonRequest) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+
+        if (moimMemberRepository.existsByMemberIdAndMoimId(authUser.getId(),moimId)||
+                joinRequestRepository.existsByParticipantIdAndMoimId(authUser.getId(),moimId)) {
+            throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
+        }
+
+        MoimMember leaderMoimMember = moimMemberRepository.findByMoimIdAndRole(moim.getId(), MoimRole.LEADER);
+
+        User participant = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+
+        User leader = leaderMoimMember.getMember();
+
+        JoinRequest joinRequest = JoinRequest.builder()
+                .createdAt(LocalDateTime.now())
+                .participant(participant)
+                .leader(leader)
+                .message(joinReasonRequest.message())
+                .build();
+
+        JoinRequest savedJoinRequest = joinRequestRepository.save(joinRequest);
+        return new JoinMoimResponse(moim.getId(), savedJoinRequest.getStatus().name());
     }
 }

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MoimMember {
@@ -33,9 +32,9 @@ public class MoimMember {
     private Moim moim;
 
     @Builder
-    public MoimMember(User joinedUser, Moim joinMoim, MoimRole moimRole) {
+    public MoimMember(User joinedUser, Moim moim, MoimRole moimRole) {
         this.member = joinedUser;
-        this.moim = joinMoim;
+        this.moim = moim;
         this.role = moimRole;
         this.joinedAt = LocalDateTime.now();
         this.status = MoimMemberStatus.ACTIVE;

@@ -1,5 +1,5 @@
 package com.moyamoyu.entity;
 
 public enum JoinRequestStatus {
-    PENDING, APPROVED, REJECTED, CANCELED
+    PENDING, APPROVED, REJECTED, CANCELED;
 }

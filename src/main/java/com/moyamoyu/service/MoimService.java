@@ -5,6 +5,7 @@ import com.moyamoyu.dto.request.JoinReasonRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
+import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.entity.*;
 import com.moyamoyu.entity.enums.MoimCategory;
@@ -61,6 +62,7 @@ public class MoimService {
         return SimpleMoimResponse.from(savedMoim);
     }
 
+    @Transactional(readOnly = true)
     public Page<SimpleMoimResponse> findMoims(int page, String category) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Moim> moims = moimRepository.findAllByCategory(MoimCategory.valueOf(category), pageable);
@@ -165,12 +167,36 @@ public class MoimService {
             throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
         }
 
-        JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId,JoinRequestStatus.PENDING).orElseThrow(
+        JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId, JoinRequestStatus.PENDING).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 처리 됬거나 없는 요청입니다.")
         );
         joinRequest.reject(reason);
         joinRequestRepository.save(joinRequest);
 
         return requestId;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleJoinRequest> findAllJoinRequest(AuthUser authUser, Long moimId, String status, int page, int size) {
+        User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        Long leaderId = moimMemberRepository.findMemberIdByMoimIdAndRole(moimId, MoimRole.LEADER);
+        if (!user.getId().equals(leaderId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<JoinRequest> joinRequests = joinRequestRepository.findAllByStatus(JoinRequestStatus.valueOf(status), pageable);
+
+
+        return joinRequests.map(
+                joinRequest -> SimpleJoinRequest.builder()
+                        .id(joinRequest.getId())
+                        .createdAt(joinRequest.getCreatedAt())
+                        .message(joinRequest.getMessage())
+                        .joinRequestStatus(joinRequest.getStatus())
+                        .build());
     }
 }

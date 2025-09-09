@@ -7,6 +7,7 @@ import com.moyamoyu.dto.request.JoinRejectRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
+import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.service.MoimService;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +112,22 @@ public class MoimController {
                 ApiResponse.success(
                         "모임 참가 거절",
                         moimService.rejectJoinMoim(authUser, moimId, requestId, joinRejectRequest.rejectReason())
+                )
+        );
+    }
+
+    @GetMapping("/{moimId}/join")
+    public ResponseEntity<ApiResponse<Page<SimpleJoinRequest>>> findAllJoinRequest(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long moimId,
+            @RequestParam(name = "status", defaultValue = "PENDING") String status,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "page", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "모임 참가 요청 조회 성공",
+                        moimService.findAllJoinRequest(authUser, moimId, status, page, size)
                 )
         );
     }

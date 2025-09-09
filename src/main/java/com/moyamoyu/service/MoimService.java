@@ -6,10 +6,7 @@ import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
-import com.moyamoyu.entity.JoinRequest;
-import com.moyamoyu.entity.Moim;
-import com.moyamoyu.entity.MoimMember;
-import com.moyamoyu.entity.User;
+import com.moyamoyu.entity.*;
 import com.moyamoyu.entity.enums.MoimCategory;
 import com.moyamoyu.entity.enums.MoimRole;
 import com.moyamoyu.exception.ApiException;
@@ -138,7 +135,9 @@ public class MoimService {
             throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
         }
 
-        JoinRequest joinRequest = joinRequestRepository.findByRequestId(requestId);
+        JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId, JoinRequestStatus.PENDING).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 처리 됬거나 없는 요청입니다.")
+        );
         joinRequest.approve();
         joinRequestRepository.save(joinRequest);
 
@@ -153,6 +152,25 @@ public class MoimService {
 
         moimMemberRepository.save(moimMember);
 
-        return participant.getId();
+        return requestId;
+    }
+
+    @Transactional
+    public Long rejectJoinMoim(AuthUser authUser, Long moimId, Long requestId, String reason) {
+        User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        Long leaderId = moimMemberRepository.findMemberIdByMoimIdAndRole(moimId, MoimRole.LEADER);
+        if (!user.getId().equals(leaderId)) {
+            throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
+        }
+
+        JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId,JoinRequestStatus.PENDING).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 처리 됬거나 없는 요청입니다.")
+        );
+        joinRequest.reject(reason);
+        joinRequestRepository.save(joinRequest);
+
+        return requestId;
     }
 }

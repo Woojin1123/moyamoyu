@@ -43,4 +43,9 @@ public class JoinRequest {
     public void approve() {
         this.status = JoinRequestStatus.APPROVED;
     }
+
+    public void reject(String reason) {
+        this.status = JoinRequestStatus.REJECTED;
+        this.rejectReason = reason;
+    }
 }

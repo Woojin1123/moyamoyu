@@ -3,6 +3,7 @@ package com.moyamoyu.controller;
 import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
 import com.moyamoyu.dto.request.JoinReasonRequest;
+import com.moyamoyu.dto.request.JoinRejectRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
@@ -93,8 +94,23 @@ public class MoimController {
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        "모임 참가 요청 성공",
+                        "모임 참가 승인",
                         moimService.approveJoinMoim(authUser, moimId, requestId)
+                )
+        );
+    }
+
+    @PostMapping("/{moimId}/join/{requestId}/reject")
+    public ResponseEntity<ApiResponse<Long>> rejectJoinMoim(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long moimId,
+            @PathVariable Long requestId,
+            @RequestBody JoinRejectRequest joinRejectRequest
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "모임 참가 거절",
+                        moimService.rejectJoinMoim(authUser, moimId, requestId, joinRejectRequest.rejectReason())
                 )
         );
     }

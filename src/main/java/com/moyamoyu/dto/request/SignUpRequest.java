@@ -12,7 +12,11 @@ public record SignUpRequest(
         String nickname,
         @Schema(description = "역할" , allowableValues = {"USER"})
         String role,
-        @Schema(description = "주소")
-        String address
+        @Schema(description = "도로명 주소")
+        String roadAddress,
+        @Schema(description = "상세 주소")
+        String detailAddress,
+        @Schema(description = "우편번호")
+        String zipcode
 ) {
 }

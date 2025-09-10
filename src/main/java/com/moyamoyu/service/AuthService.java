@@ -62,6 +62,9 @@ public class AuthService {
                 .nickname(signUpRequest.nickname())
                 .password(encodedPassword)
                 .serviceRole(ServiceRole.ROLE_USER)
+                .roadAddress(signUpRequest.roadAddress())
+                .detailAddress(signUpRequest.detailAddress())
+                .zipcode(signUpRequest.zipcode())
                 .build();
 
         User savedUser = userRepository.save(user);

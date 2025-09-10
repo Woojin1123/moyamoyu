@@ -1,0 +1,8 @@
+ALTER TABLE user
+    ADD COLUMN road_address VARCHAR(255);
+ALTER TABLE user
+    ADD COLUMN detail_address VARCHAR(255);
+ALTER TABLE user
+    ADD COLUMN zipcode VARCHAR(255);
+ALTER TABLE user
+    ADD COLUMN introduce VARCHAR(255);

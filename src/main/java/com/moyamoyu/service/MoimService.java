@@ -4,7 +4,9 @@ import com.moyamoyu.dto.AuthUser;
 import com.moyamoyu.dto.request.JoinReasonRequest;
 import com.moyamoyu.dto.request.MoimCreateRequest;
 import com.moyamoyu.dto.request.MoimUpdateRequest;
+import com.moyamoyu.dto.request.ProcessJoinRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
+import com.moyamoyu.dto.response.ProcessJoinResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.entity.*;
@@ -128,7 +130,7 @@ public class MoimService {
     }
 
     @Transactional
-    public Long approveJoinMoim(AuthUser authUser, Long moimId, Long requestId) {
+    public ProcessJoinResponse approveJoinMoim(AuthUser authUser, Long moimId, Long requestId, ProcessJoinRequest processJoinRequest) {
         User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
@@ -136,44 +138,32 @@ public class MoimService {
         if (!user.getId().equals(leaderId)) {
             throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
         }
-
+        JoinRequestStatus status = JoinRequestStatus.ofIgnoreCase(processJoinRequest.status());
         JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId, JoinRequestStatus.PENDING).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 처리 됬거나 없는 요청입니다.")
         );
-        joinRequest.approve();
-        joinRequestRepository.save(joinRequest);
 
-        User participant = joinRequest.getParticipant();
-        Moim moim = joinRequest.getMoim();
+        if (status.equals(JoinRequestStatus.APPROVED)) {
+            joinRequest.approve();
+            joinRequestRepository.save(joinRequest);
 
-        MoimMember moimMember = MoimMember.builder()
-                .joinedUser(participant)
-                .moim(moim)
-                .moimRole(MoimRole.MEMBER)
-                .build();
+            User participant = joinRequest.getParticipant();
+            Moim moim = joinRequest.getMoim();
 
-        moimMemberRepository.save(moimMember);
+            MoimMember moimMember = MoimMember.builder()
+                    .joinedUser(participant)
+                    .moim(moim)
+                    .moimRole(MoimRole.MEMBER)
+                    .build();
 
-        return requestId;
-    }
-
-    @Transactional
-    public Long rejectJoinMoim(AuthUser authUser, Long moimId, Long requestId, String reason) {
-        User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
-                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
-        );
-        Long leaderId = moimMemberRepository.findMemberIdByMoimIdAndRole(moimId, MoimRole.LEADER);
-        if (!user.getId().equals(leaderId)) {
-            throw new ApiException(ErrorCode.UNAUTHORIZED, "모임의 리더가 아닙니다");
+            moimMemberRepository.save(moimMember);
+        }
+        if(status.equals(JoinRequestStatus.REJECTED)){
+            joinRequest.reject(processJoinRequest.rejectReason());
+            joinRequestRepository.save(joinRequest);
         }
 
-        JoinRequest joinRequest = joinRequestRepository.findByIdAndStatus(requestId, JoinRequestStatus.PENDING).orElseThrow(
-                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 처리 됬거나 없는 요청입니다.")
-        );
-        joinRequest.reject(reason);
-        joinRequestRepository.save(joinRequest);
-
-        return requestId;
+        return new ProcessJoinResponse(joinRequest.getId(),joinRequest.getStatus().name());
     }
 
     @Transactional(readOnly = true)
@@ -205,8 +195,8 @@ public class MoimService {
         User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
-        Pageable pageable = PageRequest.of(page,50);
-        Page<Moim> moims = moimMemberRepository.findMoimsByMemberId(user.getId(),pageable);
+        Pageable pageable = PageRequest.of(page, 50);
+        Page<Moim> moims = moimMemberRepository.findMoimsByMemberId(user.getId(), pageable);
         return moims.map(SimpleMoimResponse::from);
     }
 }

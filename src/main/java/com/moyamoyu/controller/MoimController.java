@@ -2,11 +2,9 @@ package com.moyamoyu.controller;
 
 import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
-import com.moyamoyu.dto.request.JoinReasonRequest;
-import com.moyamoyu.dto.request.JoinRejectRequest;
-import com.moyamoyu.dto.request.MoimCreateRequest;
-import com.moyamoyu.dto.request.MoimUpdateRequest;
+import com.moyamoyu.dto.request.*;
 import com.moyamoyu.dto.response.JoinMoimResponse;
+import com.moyamoyu.dto.response.ProcessJoinResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.exception.ApiException;
@@ -98,7 +96,7 @@ public class MoimController {
         );
     }
 
-    @PostMapping("/{moimId}/join")
+    @PostMapping("/{moimId}/join-requests")
     @Operation(summary = "모임 참가 신청", description = "모임 참가 신청 API")
     public ResponseEntity<ApiResponse<JoinMoimResponse>> joinMoim(
             @AuthenticationPrincipal AuthUser authUser,
@@ -113,33 +111,18 @@ public class MoimController {
         );
     }
 
-    @PostMapping("/{moimId}/join/{requestId}/approve")
-    @Operation(summary = "참가 신청 수락", description = "모임 참가 요청에 대해 수락하는 API")
-    public ResponseEntity<ApiResponse<Long>> approveJoinMoim(
-            @AuthenticationPrincipal AuthUser authUser,
-            @PathVariable Long moimId,
-            @PathVariable Long requestId
-    ) {
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "모임 참가 승인",
-                        moimService.approveJoinMoim(authUser, moimId, requestId)
-                )
-        );
-    }
-
-    @PostMapping("/{moimId}/join/{requestId}/reject")
-    @Operation(summary = "참가 신청 거절", description = "모임 참가 요청에 대해 거절하는 API")
-    public ResponseEntity<ApiResponse<Long>> rejectJoinMoim(
+    @PostMapping("/{moimId}/join-requests/{requestId}")
+    @Operation(summary = "참가 신청 수락/거절", description = "모임 참가 요청에 대해 수락/거절 하는 API")
+    public ResponseEntity<ApiResponse<ProcessJoinResponse>> processJoinRequest(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
             @PathVariable Long requestId,
-            @RequestBody JoinRejectRequest joinRejectRequest
+            @RequestBody ProcessJoinRequest processJoinRequest
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        "모임 참가 거절",
-                        moimService.rejectJoinMoim(authUser, moimId, requestId, joinRejectRequest.rejectReason())
+                        "모임 참가 요청 처리 성공",
+                        moimService.approveJoinMoim(authUser, moimId, requestId, processJoinRequest)
                 )
         );
     }

@@ -64,7 +64,7 @@ public class MoimService {
 
     @Transactional(readOnly = true)
     public Page<SimpleMoimResponse> findMoims(int page, String category) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(page, 50);
         Page<Moim> moims = moimRepository.findAllByCategory(MoimCategory.valueOf(category), pageable);
         return moims.map(SimpleMoimResponse::from);
     }
@@ -198,5 +198,15 @@ public class MoimService {
                         .message(joinRequest.getMessage())
                         .joinRequestStatus(joinRequest.getStatus())
                         .build());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SimpleMoimResponse> findJoinedMoims(int page, AuthUser authUser) {
+        User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        Pageable pageable = PageRequest.of(page,50);
+        Page<Moim> moims = moimMemberRepository.findMoimsByMemberId(user.getId(),pageable);
+        return moims.map(SimpleMoimResponse::from);
     }
 }

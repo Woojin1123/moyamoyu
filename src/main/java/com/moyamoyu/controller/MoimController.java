@@ -9,6 +9,8 @@ import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
+import com.moyamoyu.exception.ApiException;
+import com.moyamoyu.exception.ErrorCode;
 import com.moyamoyu.service.MoimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/moims")
-@Tag(name = "MoimController" , description = "모임 관련 API")
+@Tag(name = "MoimController", description = "모임 관련 API")
 public class MoimController {
     private final MoimService moimService;
 
@@ -45,8 +47,24 @@ public class MoimController {
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        "모임 조회 성공",
+                        "전체 모임 조회 성공",
                         moimService.findMoims(page, category)
+                )
+        );
+    }
+
+    @GetMapping
+    @Operation(summary = "가입한 모임 조회", description = "가입한 모임 조회 API")
+    public ResponseEntity<ApiResponse<Page<SimpleMoimResponse>>> findJoinedMoims(
+            @AuthenticationPrincipal AuthUser authUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = true, defaultValue = "true") Boolean joined
+    ) {
+        if (joined) throw new ApiException(ErrorCode.BAD_REQUEST);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "가입한 모임 조회 성공",
+                        moimService.findJoinedMoims(page, authUser)
                 )
         );
     }

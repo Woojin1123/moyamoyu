@@ -22,7 +22,7 @@ public class User {
     private String nickname;
     @ColumnDefault("false")
     @Column(columnDefinition = "TINYINT(1)")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
     private ServiceRole serviceRole;
@@ -41,6 +41,7 @@ public class User {
         this.roadAddress = roadAddress;
         this.detailAddress = detailAddress;
         this.zipcode = zipcode;
+        this.createdAt = LocalDateTime.now();
     }
 
     public void patchInfo(UserInfoPatchRequest request) {

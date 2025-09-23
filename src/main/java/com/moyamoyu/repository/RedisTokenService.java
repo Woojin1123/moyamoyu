@@ -47,7 +47,7 @@ public class RedisTokenService {
         String key = emailVerificationPrefix + email;
 
         String savedToken = redisTemplate.opsForValue().get(key);
-        if (!savedToken.equals(token)) {
+        if (!savedToken.equals(token) || savedToken.isEmpty()) {
             throw new ApiException(ErrorCode.BAD_REQUEST);
         }
         redisTemplate.delete(key);

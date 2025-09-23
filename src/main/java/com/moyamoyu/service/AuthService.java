@@ -34,7 +34,7 @@ public class AuthService {
         );
 
         if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-            throw new ApiException(ErrorCode.BAD_REQUEST);
+            throw new ApiException(ErrorCode.BAD_REQUEST,"비밀번호가 틀렸습니다.");
         }
 
         String accessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getServiceRole().name());

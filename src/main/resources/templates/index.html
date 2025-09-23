@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoyaMoyu</title>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  </head>
+  <body>
+    <div class="login-wrapper">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="text" name="userEmail" placeholder="EMAIL" />
+        <input type="password" name="userPassword" placeholder="PASSWORD" />
+        <input type="submit" value="로그인" />
+      </form>
+    </div>
+    <div id="message" style="color: red; margin-top: 10px;"></div>
+    <!-- JS 파일 불러오기 -->
+    <script th:src="@{/js/auth/login.js}"></script>
+  </body>
+</html>

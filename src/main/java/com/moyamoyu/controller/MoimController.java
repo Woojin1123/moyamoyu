@@ -51,7 +51,7 @@ public class MoimController {
         );
     }
 
-    @GetMapping
+    @GetMapping(params = {"joined"})
     @Operation(summary = "가입한 모임 조회", description = "가입한 모임 조회 API")
     public ResponseEntity<ApiResponse<Page<SimpleMoimResponse>>> findJoinedMoims(
             @AuthenticationPrincipal AuthUser authUser,

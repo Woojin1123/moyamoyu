@@ -26,7 +26,9 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.timeout: 5000
-
+  thymeleaf:
+    cache: false
+    prefix: file:src/main/resources/templates/
 springdoc:
   swagger-ui:
     path: /api/docs

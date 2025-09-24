@@ -15,7 +15,7 @@ public class CookieUtil {
     public void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_NAME, refreshToken)
                 .httpOnly(true)
-//                .secure(false) // 테스트 환경시 https아님
+                .secure(false) // 테스트 환경시 https아님
                 .path("/")
                 .maxAge(REFRESH_TOKEN_EXP)
                 .sameSite("Lax")
@@ -26,7 +26,7 @@ public class CookieUtil {
     public void expireRefreshTokenCookie(HttpServletResponse response) {
         ResponseCookie expiredCookie = ResponseCookie.from(REFRESH_TOKEN_NAME, "")
                 .httpOnly(true)
-                //.secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(0)
                 .sameSite("LAX")

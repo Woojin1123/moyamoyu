@@ -30,6 +30,7 @@ public class User {
     private String detailAddress;
     private String zipcode;
     private String introduce;
+    private String profileImgUrl;
 
     @Builder
     public User(String email, String password, String nickname, LocalDateTime createdAt, ServiceRole serviceRole, String roadAddress, String detailAddress, String zipcode) {

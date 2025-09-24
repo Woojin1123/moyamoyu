@@ -3,6 +3,7 @@ package com.moyamoyu.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,9 +28,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/" , "/js/**", "/css/**", // templates
                                 "/api/auth/**", // Auth API
-                                "/api/docs", "/api/swagger-ui/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs", // Swagger API
-                                "/user/**", "/admin/**"
+                                "/api/docs", "/api/swagger-ui/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs"// Swagger API
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/moims").permitAll() // 모임조회
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().hasRole("USER"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Cross-Origin

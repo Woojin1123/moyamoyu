@@ -16,7 +16,9 @@ public record SimpleMoimResponse(
         @Schema(description = "모임 정원")
         Long capacity,
         @Schema(description = "모임 현재 인원")
-        Long memberCount
+        Long memberCount,
+        @Schema(description = "카테고리")
+        String category
 ) {
     public static SimpleMoimResponse from(Moim moim){
         return new SimpleMoimResponse(
@@ -24,7 +26,8 @@ public record SimpleMoimResponse(
                 moim.getName(),
                 moim.getDescription(),
                 moim.getGrade().getCapacity(),
-                moim.getMemberCount()
+                moim.getMemberCount(),
+                moim.getCategory().name()
         );
     }
 }

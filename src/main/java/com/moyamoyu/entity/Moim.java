@@ -28,6 +28,7 @@ public class Moim {
     @Column(columnDefinition = "TINYINT(1)")
     private Boolean isDeleted;
     private Long memberCount;
+    private String coverImageUrl;
 
     @Builder
     public Moim(String name, String description, String joinPolicy, String category) {

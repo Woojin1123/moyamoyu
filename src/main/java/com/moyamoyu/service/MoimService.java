@@ -10,6 +10,7 @@ import com.moyamoyu.dto.response.ProcessJoinResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.entity.*;
+import com.moyamoyu.entity.enums.JoinPolicy;
 import com.moyamoyu.entity.enums.MoimCategory;
 import com.moyamoyu.entity.enums.MoimRole;
 import com.moyamoyu.exception.ApiException;
@@ -67,7 +68,13 @@ public class MoimService {
     @Transactional(readOnly = true)
     public Page<SimpleMoimResponse> findMoims(int page, String category) {
         Pageable pageable = PageRequest.of(page, 50);
-        Page<Moim> moims = moimRepository.findAllByCategory(MoimCategory.valueOf(category), pageable);
+        Page<Moim> moims;
+        //나중에 QueryDSL이나 JPQL로 동적으로 처리
+        if (category.isEmpty()) {
+            moims = moimRepository.findAll(pageable);
+        } else {
+            moims = moimRepository.findAllByCategory(MoimCategory.valueOf(category), pageable);
+        }
         return moims.map(SimpleMoimResponse::from);
     }
 
@@ -104,21 +111,33 @@ public class MoimService {
         Moim moim = moimRepository.findById(moimId).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
-
-        if (moimMemberRepository.existsByMemberIdAndMoimId(authUser.getId(), moimId) ||
-                joinRequestRepository.existsByParticipantIdAndMoimId(authUser.getId(), moimId)) {
-            throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS);
-        }
-
-        MoimMember leaderMoimMember = moimMemberRepository.findByMoimIdAndRole(moim.getId(), MoimRole.LEADER);
-
         User participant = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
 
+        if (moimMemberRepository.existsByMemberIdAndMoimId(participant.getId(), moimId)) {
+            throw new ApiException(ErrorCode.RESOURCE_ALREADY_EXISTS, "이미 참가한 모임입니다.");
+        }
+        if (joinRequestRepository.existsByParticipantIdAndMoimId(authUser.getId(), moimId)) {
+            throw new ApiException(ErrorCode.RESOURCE_NOT_FOUND, "이미 참가신청한 모임입니다.");
+        }
+        // OPEN
+        if (moim.getJoinPolicy().equals(JoinPolicy.OPEN)) {
+            MoimMember moimMember = MoimMember.builder()
+                    .moim(moim)
+                    .joinedUser(participant)
+                    .moimRole(MoimRole.MEMBER)
+                    .build();
+            moimMemberRepository.save(moimMember);
+            return new JoinMoimResponse(moim.getId(), JoinRequestStatus.APPROVED.name());
+        }
+        // PRIVATE
+        MoimMember leaderMoimMember = moimMemberRepository.findByMoimIdAndRole(moim.getId(), MoimRole.LEADER);
+
         User leader = leaderMoimMember.getMember();
 
         JoinRequest joinRequest = JoinRequest.builder()
+                .moim(moim)
                 .createdAt(LocalDateTime.now())
                 .participant(participant)
                 .leader(leader)
@@ -158,12 +177,12 @@ public class MoimService {
 
             moimMemberRepository.save(moimMember);
         }
-        if(status.equals(JoinRequestStatus.REJECTED)){
+        if (status.equals(JoinRequestStatus.REJECTED)) {
             joinRequest.reject(processJoinRequest.rejectReason());
             joinRequestRepository.save(joinRequest);
         }
 
-        return new ProcessJoinResponse(joinRequest.getId(),joinRequest.getStatus().name());
+        return new ProcessJoinResponse(joinRequest.getId(), joinRequest.getStatus().name());
     }
 
     @Transactional(readOnly = true)
@@ -198,5 +217,13 @@ public class MoimService {
         Pageable pageable = PageRequest.of(page, 50);
         Page<Moim> moims = moimMemberRepository.findMoimsByMemberId(user.getId(), pageable);
         return moims.map(SimpleMoimResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public SimpleMoimResponse findMoim(Long id) {
+        Moim moim = moimRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
+        );
+        return SimpleMoimResponse.from(moim);
     }
 }

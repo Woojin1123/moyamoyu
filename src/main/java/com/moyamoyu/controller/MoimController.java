@@ -2,7 +2,10 @@ package com.moyamoyu.controller;
 
 import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
-import com.moyamoyu.dto.request.*;
+import com.moyamoyu.dto.request.JoinReasonRequest;
+import com.moyamoyu.dto.request.MoimCreateRequest;
+import com.moyamoyu.dto.request.MoimUpdateRequest;
+import com.moyamoyu.dto.request.ProcessJoinRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.ProcessJoinResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequest;
@@ -40,13 +43,26 @@ public class MoimController {
     @GetMapping
     @Operation(summary = "모임 전체 조회", description = "전체 모임 조회 API")
     public ResponseEntity<ApiResponse<Page<SimpleMoimResponse>>> findMoims(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "STUDY") String category
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "") String category
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "전체 모임 조회 성공",
                         moimService.findMoims(page, category)
+                )
+        );
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary ="모임 단일 조회", description = "모임 단일 조회 API")
+    public ResponseEntity<ApiResponse<SimpleMoimResponse>> findMoim(
+        @PathVariable Long id
+    ){
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "모임 조회 성공",
+                        moimService.findMoim(id)
                 )
         );
     }
@@ -96,11 +112,11 @@ public class MoimController {
         );
     }
 
-    @PostMapping("/{moimId}/join-requests")
+    @PostMapping("/{moimId}/join-request")
     @Operation(summary = "모임 참가 신청", description = "모임 참가 신청 API")
     public ResponseEntity<ApiResponse<JoinMoimResponse>> joinMoim(
             @AuthenticationPrincipal AuthUser authUser,
-            @PathVariable Long moimId,
+            @PathVariable("moimId") Long moimId,
             @RequestBody JoinReasonRequest joinReasonRequest
     ) {
         return ResponseEntity.ok(

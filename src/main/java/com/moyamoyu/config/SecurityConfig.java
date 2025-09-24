@@ -30,7 +30,8 @@ public class SecurityConfig {
                                 "/api/auth/**", // Auth API
                                 "/api/docs", "/api/swagger-ui/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs"// Swagger API
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/moims").permitAll() // 모임조회
+                        .requestMatchers(HttpMethod.GET, "/api/moims/{id:[0-9]+}").permitAll() // 모임조회
+                        .requestMatchers(HttpMethod.GET,"/api/moims").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().hasRole("USER"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Cross-Origin

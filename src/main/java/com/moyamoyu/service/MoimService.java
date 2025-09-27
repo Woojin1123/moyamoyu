@@ -7,7 +7,7 @@ import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.request.ProcessJoinRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.ProcessJoinResponse;
-import com.moyamoyu.dto.response.SimpleJoinRequest;
+import com.moyamoyu.dto.response.SimpleJoinRequestResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.entity.*;
 import com.moyamoyu.entity.enums.JoinPolicy;
@@ -186,7 +186,7 @@ public class MoimService {
     }
 
     @Transactional(readOnly = true)
-    public Page<SimpleJoinRequest> findAllJoinRequest(AuthUser authUser, Long moimId, String status, int page, int size) {
+    public Page<SimpleJoinRequestResponse> findAllJoinRequest(AuthUser authUser, Long moimId, String status, int page, int size) {
         User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
@@ -201,9 +201,9 @@ public class MoimService {
 
 
         return joinRequests.map(
-                joinRequest -> SimpleJoinRequest.builder()
+                joinRequest -> SimpleJoinRequestResponse.builder()
                         .id(joinRequest.getId())
-                        .createdAt(joinRequest.getCreatedAt())
+                        .requestedAt(joinRequest.getCreatedAt())
                         .message(joinRequest.getMessage())
                         .joinRequestStatus(joinRequest.getStatus())
                         .build());

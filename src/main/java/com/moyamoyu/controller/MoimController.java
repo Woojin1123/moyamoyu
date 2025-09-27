@@ -8,7 +8,7 @@ import com.moyamoyu.dto.request.MoimUpdateRequest;
 import com.moyamoyu.dto.request.ProcessJoinRequest;
 import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.ProcessJoinResponse;
-import com.moyamoyu.dto.response.SimpleJoinRequest;
+import com.moyamoyu.dto.response.SimpleJoinRequestResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
 import com.moyamoyu.exception.ApiException;
 import com.moyamoyu.exception.ErrorCode;
@@ -145,7 +145,7 @@ public class MoimController {
 
     @GetMapping("/{moimId}/join")
     @Operation(summary = "참가 요청 조회", description = "모임에 대한 참가 요청을 전부 조회하는 API")
-    public ResponseEntity<ApiResponse<Page<SimpleJoinRequest>>> findAllJoinRequest(
+    public ResponseEntity<ApiResponse<Page<SimpleJoinRequestResponse>>> findAllJoinRequest(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long moimId,
             @RequestParam(name = "status", defaultValue = "PENDING") String status,
@@ -159,4 +159,6 @@ public class MoimController {
                 )
         );
     }
+
+
 }

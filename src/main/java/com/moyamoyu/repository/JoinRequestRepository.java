@@ -16,4 +16,8 @@ public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> 
     Optional<JoinRequest> findByIdAndStatus(Long requestId, JoinRequestStatus status);
 
     Page<JoinRequest> findAllByStatus(JoinRequestStatus valueOf, Pageable pageable);
+
+    Page<JoinRequest> findAllByLeaderId(Long leaderId, Pageable pageable);
+
+    Page<JoinRequest> findAllByLeaderIdAndStatus(Long leaderId, JoinRequestStatus status, Pageable pageable);
 }

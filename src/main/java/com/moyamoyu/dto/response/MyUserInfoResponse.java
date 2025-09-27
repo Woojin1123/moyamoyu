@@ -10,6 +10,7 @@ public record MyUserInfoResponse(
         String nickname,
         LocalDateTime createdAt,
         String fullAddress,
-        String introduce
+        String introduce,
+        String profileImg
 ) {
 }

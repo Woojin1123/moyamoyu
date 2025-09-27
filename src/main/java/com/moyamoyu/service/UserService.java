@@ -25,7 +25,7 @@ public class UserService {
         User user = userRepository.findByEmail(authUser.getEmail()).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
-        String fullAddress = user.getRoadAddress() + user.getDetailAddress();
+        String fullAddress = user.getRoadAddress() +" "+ user.getDetailAddress();
 
         return MyUserInfoResponse.builder()
                 .email(user.getEmail())
@@ -33,6 +33,7 @@ public class UserService {
                 .createdAt(user.getCreatedAt())
                 .fullAddress(fullAddress)
                 .introduce(user.getIntroduce())
+                .profileImg(user.getProfileImgUrl())
                 .build();
     }
 

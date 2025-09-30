@@ -4,6 +4,7 @@ import com.moyamoyu.dto.ApiResponse;
 import com.moyamoyu.dto.AuthUser;
 import com.moyamoyu.dto.response.SimpleJoinRequestResponse;
 import com.moyamoyu.service.JoinRequestService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JoinRequestController {
     private final JoinRequestService joinRequestService;
     @GetMapping("/received")
+    @Operation(summary = "받은 요청 조회", description = "받은 요청을 조회하는 API")
     public ResponseEntity<ApiResponse<Page<SimpleJoinRequestResponse>>> findAllReceivedRequest(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam(name = "page", defaultValue = "0") int page,

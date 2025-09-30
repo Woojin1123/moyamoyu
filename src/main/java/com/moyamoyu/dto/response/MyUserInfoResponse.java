@@ -9,7 +9,8 @@ public record MyUserInfoResponse(
         String email,
         String nickname,
         LocalDateTime createdAt,
-        String fullAddress,
+        String roadAddress,
+        String detailAddress,
         String introduce,
         String profileImg
 ) {

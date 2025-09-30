@@ -9,6 +9,7 @@ import com.moyamoyu.dto.response.UserSimpleResponse;
 import com.moyamoyu.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,7 +52,7 @@ public class UserController {
     @Operation(summary = "내 정보 수정", description = "인증된 사용자에 대한 정보를 수정하는 API")
     public ResponseEntity<ApiResponse<MyUserInfoResponse>> patchUserInfo(
             @AuthenticationPrincipal AuthUser authUser,
-            @RequestBody UserInfoPatchRequest userInfoPatchRequest
+            @Valid @RequestBody UserInfoPatchRequest userInfoPatchRequest
     ){
         return ResponseEntity.ok(
                 ApiResponse.success(

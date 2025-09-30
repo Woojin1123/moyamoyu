@@ -21,7 +21,6 @@ public class JoinRequestService {
 
         joinRequests = joinRequestRepository.findAllByLeaderIdAndStatus(leaderId, JoinRequestStatus.PENDING, pageable);
 
-
         return joinRequests.map((e) -> SimpleJoinRequestResponse.builder()
                 .id(e.getId())
                 .moimId(e.getMoim().getId())

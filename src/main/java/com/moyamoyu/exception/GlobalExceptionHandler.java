@@ -3,6 +3,7 @@ package com.moyamoyu.exception;
 import com.moyamoyu.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,6 +16,14 @@ public class GlobalExceptionHandler {
         ApiResponse<Object> response = ApiResponse.failure(e);
         return ResponseEntity
                 .status(e.getHttpStatus())
+                .body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleValidException(MethodArgumentNotValidException e){
+        ApiResponse<Object> response = ApiResponse.failure(e.getBindingResult().getFieldError().getDefaultMessage());
+        return ResponseEntity
+                .status(e.getStatusCode())
                 .body(response);
     }
 }

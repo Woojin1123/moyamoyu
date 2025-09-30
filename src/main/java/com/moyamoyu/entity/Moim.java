@@ -29,6 +29,7 @@ public class Moim {
     private Boolean isDeleted;
     private Long memberCount;
     private String coverImageUrl;
+    private Long viewCount;
 
     @Builder
     public Moim(String name, String description, String joinPolicy, String category) {
@@ -42,6 +43,9 @@ public class Moim {
 
     public void delete() {
         this.isDeleted = true;
+    }
+    public void increaseViewCount(){
+        this.viewCount += 1;
     }
 
     public void update(String name, String description, String joinPolicy) {

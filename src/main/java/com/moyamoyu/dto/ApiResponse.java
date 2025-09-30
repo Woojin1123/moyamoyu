@@ -21,4 +21,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> failure(ApiException e){
         return new ApiResponse<>(e.getMessage());
     }
+    public static <T> ApiResponse<T> failure(String message){
+        return new ApiResponse<>(message);
+    }
 }

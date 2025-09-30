@@ -1,0 +1,2 @@
+ALTER TABLE moim
+    ADD COLUMN view_count BIGINT DEFAULT 0;

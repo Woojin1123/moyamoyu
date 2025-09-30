@@ -219,11 +219,17 @@ public class MoimService {
         return moims.map(SimpleMoimResponse::from);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public SimpleMoimResponse findMoim(Long id) {
         Moim moim = moimRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorCode.RESOURCE_NOT_FOUND)
         );
-        return SimpleMoimResponse.from(moim);
+        moim.increaseViewCount();
+        Moim savedMoim = moimRepository.save(moim);
+        return SimpleMoimResponse.from(savedMoim);
+    }
+
+    public Page<SimpleMoimResponse> findHotMoims() {
+        return null;
     }
 }

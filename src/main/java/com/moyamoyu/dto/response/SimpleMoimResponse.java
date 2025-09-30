@@ -22,7 +22,9 @@ public record SimpleMoimResponse(
         @Schema(description = "커버이미지")
         String coverImgUrl,
         @Schema(description = "모임 정책")
-        String policy
+        String policy,
+        @Schema(description = "조회수")
+        Long viewCount
 
 ) {
     public static SimpleMoimResponse from(Moim moim){
@@ -34,7 +36,8 @@ public record SimpleMoimResponse(
                 moim.getMemberCount(),
                 moim.getCategory().name(),
                 moim.getCoverImageUrl(),
-                moim.getJoinPolicy().name()
+                moim.getJoinPolicy().name(),
+                moim.getViewCount()
         );
     }
 }

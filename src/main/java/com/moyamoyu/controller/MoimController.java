@@ -10,8 +10,6 @@ import com.moyamoyu.dto.response.JoinMoimResponse;
 import com.moyamoyu.dto.response.ProcessJoinResponse;
 import com.moyamoyu.dto.response.SimpleJoinRequestResponse;
 import com.moyamoyu.dto.response.SimpleMoimResponse;
-import com.moyamoyu.exception.ApiException;
-import com.moyamoyu.exception.ErrorCode;
 import com.moyamoyu.service.MoimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -74,11 +72,22 @@ public class MoimController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = true, defaultValue = "true") Boolean joined
     ) {
-        if (joined) throw new ApiException(ErrorCode.BAD_REQUEST);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         "가입한 모임 조회 성공",
                         moimService.findJoinedMoims(page, authUser)
+                )
+        );
+    }
+    @GetMapping("/hot")
+    @Operation(summary = "가입한 모임 조회", description = "가입한 모임 조회 API")
+    public ResponseEntity<ApiResponse<Page<SimpleMoimResponse>>> findHotMoims(
+
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "인기 모임 조회 성공",
+                        moimService.findHotMoims()
                 )
         );
     }
